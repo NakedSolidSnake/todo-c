@@ -26,9 +26,12 @@ bool action_manager_open (action_manager_t *object, action_manager_args_t *args)
 
     if (object != NULL && args != NULL)
     {
-        sat_status_t __status = sat_array_create (&object->actions,
-                                                  ACTION_MANAGER_COMMAND_AMOUNT,
-                                                  sizeof (action_t));
+        sat_status_t __status = sat_array_create (&object->actions, &(sat_array_args_t)
+                                                  {   
+                                                      .size = ACTION_MANAGER_COMMAND_AMOUNT,
+                                                      .object_size = sizeof (action_t),
+                                                      .mode = sat_array_mode_static
+                                                  });
 
         if (sat_status_get_result (&__status) == true)
         {

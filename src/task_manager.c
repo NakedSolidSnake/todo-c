@@ -7,9 +7,12 @@ bool task_manager_open (task_manager_t *object)
 
     if (object != NULL)
     {
-        sat_status_t __status = sat_array_create (&object->tasks,
-                                                  DEFINITIONS_TASKS_MAX,
-                                                  sizeof (task_t));
+        sat_status_t __status = sat_array_create (&object->tasks, &(sat_array_args_t)
+                                                                    {   
+                                                                        .size = DEFINITIONS_TASKS_MAX,
+                                                                        .object_size = sizeof (task_t),
+                                                                        .mode = sat_array_mode_static
+                                                                    });
         status = sat_status_get_result (&__status);
     }
 
