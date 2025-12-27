@@ -9,7 +9,6 @@ target_sources (update
 target_include_directories (update
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/
-    PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/dto
 )
 
@@ -17,4 +16,5 @@ target_link_libraries (update
     PUBLIC
     domain
     common
+    ports
 )

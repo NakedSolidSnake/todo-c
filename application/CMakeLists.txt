@@ -1,7 +1,10 @@
+add_subdirectory (ports)
 add_subdirectory (services)
-# add_subdirectory (context)
+add_subdirectory (context)
 
-target_include_directories (domain
+add_library (application INTERFACE)
+
+target_link_libraries (application 
     INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/ports
+    context
 )

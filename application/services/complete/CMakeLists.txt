@@ -9,7 +9,6 @@ target_sources (complete
 target_include_directories (complete
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/
-    PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/dto
 )
 
@@ -17,4 +16,5 @@ target_link_libraries (complete
     PUBLIC
     domain
     common
+    ports
 )

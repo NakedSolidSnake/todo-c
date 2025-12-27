@@ -1,12 +1,7 @@
 #include <todo.h>
+#include <string.h>
 
-#define TODO_COMMAND_ADD         "add"      /* <command> <task name> <task description> */
-#define TODO_COMMAND_DISPLAY     "display"  /* <command> */
-#define TODO_COMMAND_REMOVE      "remove"   /* <command> <task id> */
-#define TODO_COMMAND_UPDATE      "update"   /* <command> <task name> <task description> <task id> */
-#define TODO_COMMAND_COMPLETE    "complete" /* <command> <task id> */
-
-typedef struct (*todo_action_handler_t) (todo_t *const object, const todo_action_args_t *const args);
+typedef sat_status_t (*todo_action_handler_t) (todo_t *const object, const todo_action_args_t *const args);
 
 typedef struct 
 {
@@ -17,6 +12,7 @@ typedef struct
 
 static sat_status_t todo_command_is_valid (const char *const command);
 static bool todo_is_equal (const void *element, const void *new_element);
+static bool todo_compare_by_command (const void *element, const void *param);
 static sat_status_t todo_action_add (todo_t *const object, const todo_action_args_t *const args);
 static sat_status_t todo_action_display (todo_t *const object, const todo_action_args_t *const args);
 static sat_status_t todo_action_remove (todo_t *const object, const todo_action_args_t *const args);
@@ -80,7 +76,7 @@ sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const
         todo_action_t action;
         status = sat_set_get_object_ref_by_parameter (object->commands,
                                          args->command,
-                                         compare_by_command,
+                                         todo_compare_by_command,
                                          (void **) &action);
 
         sat_status_break_on_error (status);
@@ -149,7 +145,7 @@ static sat_status_t todo_action_add (todo_t *const object, const todo_action_arg
         status = task_create_request_new (&request, args->parameters.first, args->parameters.second);
         sat_status_break_on_error (status);
 
-        status = object->services.create.perform (&object->services.create, &request);
+        status = task_create_service_perform (&object->services.create, &request);
 
     } while (false);
 
@@ -176,12 +172,11 @@ static sat_status_t todo_action_remove (todo_t *const object, const todo_action_
 
     do
     {
-        /* Implementation of the 'remove' action goes here */
         task_remove_request_t request;
         status = task_remove_request_new (&request, args->parameters.first);
         sat_status_break_on_error (status);
 
-        status = object->services.remove.perform (&object->services.remove, &request);
+        status = task_remove_service_perform (&object->services.remove, &request);
 
     } while (false);
 
@@ -200,7 +195,7 @@ static sat_status_t todo_action_update (todo_t *const object, const todo_action_
         status = task_update_request_new (&request, args->parameters.third, args->parameters.first, args->parameters.second);
         sat_status_break_on_error (status);
 
-        status = object->services.update.perform (&object->services.update, &request);
+        status = task_update_service_perform (&object->services.update, &request);
 
     } while (false);
 
@@ -218,14 +213,14 @@ static sat_status_t todo_action_complete (todo_t *const object, const todo_actio
         status = task_complete_request_new (&request, args->parameters.first);
         sat_status_break_on_error (status);
 
-        status = object->services.complete.perform (&object->services.complete, &request);
+        status = task_complete_service_perform (&object->services.complete, &request);
 
     } while (false);
 
     return status;
 }
 
-static bool compare_by_command (const void *element, const void *param)
+static bool todo_compare_by_command (const void *element, const void *param)
 {
     const todo_action_t *action = (const todo_action_t *)element;
     const char *command = (const char *)param;

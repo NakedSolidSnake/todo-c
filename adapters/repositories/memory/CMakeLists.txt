@@ -13,4 +13,5 @@ target_include_directories (task_repository_memory
 target_link_libraries (task_repository_memory
     PUBLIC
     domain
+    ports
 )
