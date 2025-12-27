@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 
-bool common_is_a_number (char *string)
+bool common_is_a_number (const char *const string)
 {
     bool status = true;
 
