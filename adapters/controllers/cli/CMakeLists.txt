@@ -10,8 +10,11 @@ target_include_directories (cli
     ${CMAKE_CURRENT_LIST_DIR}/
 )
 
-target_link_directories (cli
+target_link_libraries (cli
     PUBLIC
     controller_base
     application
+    translate
+    prompt
+    menu
 )

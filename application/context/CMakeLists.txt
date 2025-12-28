@@ -3,6 +3,7 @@ add_library (context "")
 target_sources (context
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/todo.c
+    ${CMAKE_CURRENT_LIST_DIR}/todo_action_args.c
 )
 
 target_include_directories (context

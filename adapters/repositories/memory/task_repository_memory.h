@@ -7,6 +7,7 @@ typedef struct
 {
     task_repository_t base;
     sat_set_t *storage;
+    uint32_t next_id;
 
 } task_repository_memory_t;
 

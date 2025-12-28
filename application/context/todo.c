@@ -73,7 +73,7 @@ sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const
         status = todo_command_is_valid (args->command);
         sat_status_break_on_error (status);
 
-        todo_action_t action;
+        todo_action_t *action;
         status = sat_set_get_object_ref_by_parameter (object->commands,
                                          args->command,
                                          todo_compare_by_command,
@@ -81,7 +81,7 @@ sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const
 
         sat_status_break_on_error (status);
 
-        status = action.handler (object, args);
+        status = action->handler (object, args);
 
     } while (false);
 
@@ -224,5 +224,6 @@ static bool todo_compare_by_command (const void *element, const void *param)
 {
     const todo_action_t *action = (const todo_action_t *)element;
     const char *command = (const char *)param;
+    
     return strcmp (action->command, command) == 0;
 }

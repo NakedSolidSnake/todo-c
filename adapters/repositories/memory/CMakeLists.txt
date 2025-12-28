@@ -14,4 +14,5 @@ target_link_libraries (task_repository_memory
     PUBLIC
     domain
     ports
+    sat
 )

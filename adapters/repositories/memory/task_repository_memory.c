@@ -70,8 +70,13 @@ static sat_status_t task_repository_memory_store (void *const object, const task
         sat_status_break_if_null (status, memory, "task_repository_memory_t is null");
         sat_status_break_if_null (status, task, "task_t is null");
 
-        status = sat_set_add (memory->storage, (void *) task);
+        task_t task_new;
 
+        task_create_with_id (&task_new, ++memory->next_id, task->name, task->description);
+
+        status = sat_set_add (memory->storage, (void *) &task_new);
+
+        sat_log_debug ("Task stored in memory repository: ID=%u, Name=%s", task_new.id, task_new.name);
     } while (false);
 
     return status;
