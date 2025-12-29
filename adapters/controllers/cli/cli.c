@@ -19,7 +19,7 @@ typedef struct
 
 } cli_parameters_t;
 
-static sat_status_t cli_open (void *const object, const void *const args);
+static sat_status_t cli_open (void *const object, const controller_base_args_t *const args);
 static sat_status_t cli_run (void *const object);
 static sat_status_t cli_close (void *const object);
 static sat_status_t cli_add (void *const object);
@@ -27,6 +27,7 @@ static sat_status_t cli_display (void *const object);
 static sat_status_t cli_remove (void *const object);
 static sat_status_t cli_update (void *const object);
 static sat_status_t cli_complete (void *const object);
+static sat_status_t cli_exit (void *const object);
 
 static bool cli_is_command_equal (const void *command, const void *command_new);
 static bool cli_compare_by_command (const void *element, const void *param);
@@ -49,7 +50,7 @@ sat_status_t cli_init (cli_t *const object)
 
         status = sat_set_create (&object->commands, &(sat_set_args_t)
                                             {
-                                                .size = 5,
+                                                .size = 6,
                                                 .object_size = sizeof (cli_command_t),
                                                 .is_equal = cli_is_command_equal,
                                                 .mode = sat_set_mode_static
@@ -61,6 +62,7 @@ sat_status_t cli_init (cli_t *const object)
         sat_set_add (object->commands, &(cli_command_t) {.name = TODO_COMMAND_REMOVE,   .handler = cli_remove});
         sat_set_add (object->commands, &(cli_command_t) {.name = TODO_COMMAND_UPDATE,   .handler = cli_update});
         sat_set_add (object->commands, &(cli_command_t) {.name = TODO_COMMAND_COMPLETE, .handler = cli_complete});
+        sat_set_add (object->commands, &(cli_command_t) {.name = "exit",                .handler = cli_exit});
 
         object->base.object   = object;
         object->base.open     = cli_open;
@@ -77,7 +79,7 @@ sat_status_t cli_init (cli_t *const object)
     return status;
 }
 
-static sat_status_t cli_open (void *const object, const void *const args)
+static sat_status_t cli_open (void *const object, const controller_base_args_t *const args)
 {
     sat_status_t status = sat_status_success (&status);
     cli_t *const cli = (cli_t *const) object;
@@ -87,7 +89,7 @@ static sat_status_t cli_open (void *const object, const void *const args)
     {
         sat_status_break_if_null (status, cli_args, "cli_args_t is null");
 
-        status = todo_open (&cli->todo, &(todo_args_t) { .repository = cli_args->repository });
+        status = todo_open (&cli->todo, &(todo_args_t) { .repository = args->repository });
         sat_status_break_on_error (status);
 
         cli->running = true;
@@ -215,7 +217,7 @@ static sat_status_t cli_display (void *const object)
         }
 
         sat_array_destroy (result.data.tasks);
-        
+
     } while (false);
 
     return status;
@@ -331,6 +333,26 @@ static sat_status_t cli_complete (void *const object)
     } while (false);
 
     return status;
+}
+
+static sat_status_t cli_exit (void *const object)
+{
+    sat_status_t status = sat_status_success (&status);
+
+    cli_t *const cli = (cli_t *const) object;
+    
+    do
+    {
+        sat_status_break_if_null (status, object, "cli is null");
+
+        if (cli_wanna_proceed (cli, translate_get_text_by (&cli->translate, type_question_exit)) == false)
+        {
+            break;
+        }
+
+        cli->running = false;
+
+    } while (false);
 }
 
 static cli_parameters_t cli_get_parameters (const cli_t *const object)

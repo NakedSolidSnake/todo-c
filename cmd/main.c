@@ -1,9 +1,8 @@
-#include <cli.h>
+#include <todo_factory.h>
 #include <task_repository_memory.h>
 
 int main (void)
 {
-    cli_t cli;
     sat_status_t status;
     task_repository_memory_t memory;
 
@@ -14,16 +13,16 @@ int main (void)
         status = task_repository_memory_open (&memory);
         sat_status_break_on_error (status);
 
-        status = cli_init (&cli);
+        controller_base_t *controller = todo_factory_create_controller (todo_factory_type_cli);
         sat_status_break_on_error (status);
 
-        status = cli.base.open (&cli, &(cli_args_t){.repository = &memory.base});
+        status = controller->open (controller, &(controller_base_args_t){.repository = &memory.base});
         sat_status_break_on_error (status);
 
-        status = cli.base.run (&cli);
+        status = controller->run (controller);
         sat_status_break_on_error (status);
 
-        status = cli.base.close (&cli);
+        status = controller->close (controller);
         sat_status_break_on_error (status);
 
     } while (false);

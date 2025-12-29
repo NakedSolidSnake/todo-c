@@ -14,7 +14,7 @@ typedef enum
     type_error_task_update,
     type_error_task_complete,
     type_error_task_id,
-    type_question_modification,
+    type_question_exit,
     type_question_task_add,
     type_question_task_remove,
     type_question_task_update,
