@@ -22,12 +22,13 @@ typedef struct
 static sat_status_t cli_open (void *const object, const controller_base_args_t *const args);
 static sat_status_t cli_run (void *const object);
 static sat_status_t cli_close (void *const object);
-static sat_status_t cli_add (void *const object);
-static sat_status_t cli_display (void *const object);
-static sat_status_t cli_remove (void *const object);
-static sat_status_t cli_update (void *const object);
-static sat_status_t cli_complete (void *const object);
-static sat_status_t cli_exit (void *const object);
+
+static sat_status_t cli_add (cli_t *const object);
+static sat_status_t cli_display (cli_t *const object);
+static sat_status_t cli_remove (cli_t *const object);
+static sat_status_t cli_update (cli_t *const object);
+static sat_status_t cli_complete (cli_t *const object);
+static sat_status_t cli_exit (cli_t *const object);
 
 static bool cli_is_command_equal (const void *command, const void *command_new);
 static bool cli_compare_by_command (const void *element, const void *param);
@@ -68,11 +69,6 @@ sat_status_t cli_init (cli_t *const object)
         object->base.open     = cli_open;
         object->base.close    = cli_close;
         object->base.run      = cli_run;
-        object->base.add      = cli_add;
-        object->base.display  = cli_display;
-        object->base.remove   = cli_remove;
-        object->base.update   = cli_update;
-        object->base.complete = cli_complete;
         
     } while (false);
 
@@ -150,16 +146,15 @@ static sat_status_t cli_close (void *const object)
     return status;
 }
 
-static sat_status_t cli_add (void *const object)
+static sat_status_t cli_add (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
-    cli_t *const cli = (cli_t *const) object;
 
     do
     {
         cli_parameters_t parameters = cli_get_parameters (object);
         
-        if (cli_wanna_proceed (cli, translate_get_text_by (&cli->translate, type_question_task_add)) == false)
+        if (cli_wanna_proceed (object, translate_get_text_by (&object->translate, type_question_task_add)) == false)
         {
             break;
         }
@@ -170,24 +165,22 @@ static sat_status_t cli_add (void *const object)
 
         todo_action_result_t result;
 
-        status = todo_process (&cli->todo, &args, &result);
+        status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_add), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_add), style_error);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&cli->translate, type_success_task_add), style_success);
-
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_add), style_success);
     } while (false);
 
     return status;
 }
 
-static sat_status_t cli_display (void *const object)
+static sat_status_t cli_display (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
-    cli_t *const cli = (cli_t *const) object;
 
     do
     {
@@ -196,7 +189,7 @@ static sat_status_t cli_display (void *const object)
 
         todo_action_result_t result;
 
-        status = todo_process (&cli->todo, &args, &result);
+        status = todo_process (&object->todo, &args, &result);
         sat_status_break_on_error (status);
 
         /* Handle the display result here, e.g., print the tasks */
@@ -223,15 +216,14 @@ static sat_status_t cli_display (void *const object)
     return status;
 }
 
-static sat_status_t cli_remove (void *const object)
+static sat_status_t cli_remove (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
-    cli_t *const cli = (cli_t *const) object;
     char id [32];
 
     do
     {
-        if (cli_get_id (cli, id, translate_get_text_by (&cli->translate, type_id_remove)) == false)
+        if (cli_get_id (object, id, translate_get_text_by (&object->translate, type_id_remove)) == false)
         {
             break;
         }
@@ -242,37 +234,35 @@ static sat_status_t cli_remove (void *const object)
 
         todo_action_result_t result;
 
-        status = todo_process (&cli->todo, &args, &result);
+        status = todo_process (&object->todo, &args, &result);
 
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_remove), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_remove), style_error);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&cli->translate, type_success_task_remove), style_success);
-
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_remove), style_success);
     } while (false);
 
     return status;
 }
 
-static sat_status_t cli_update (void *const object)
+static sat_status_t cli_update (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
-    cli_t *const cli = (cli_t *const) object;
     char id [32];
 
     do
     {
-        if (cli_get_id (cli, id, translate_get_text_by (&cli->translate, type_id_update)) == false)
+        if (cli_get_id (object, id, translate_get_text_by (&object->translate, type_id_update)) == false)
         {
             break;
         }
 
-        cli_parameters_t parameters = cli_get_parameters (cli);
+        cli_parameters_t parameters = cli_get_parameters (object);
 
-        if (cli_wanna_proceed (cli, translate_get_text_by (&cli->translate, type_question_task_update)) == false)
+        if (cli_wanna_proceed (object, translate_get_text_by (&object->translate, type_question_task_update)) == false)
         {
             break;
         }
@@ -283,34 +273,32 @@ static sat_status_t cli_update (void *const object)
 
         todo_action_result_t result;
 
-        status = todo_process (&cli->todo, &args, &result);
+        status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_update), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_update), style_error);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&cli->translate, type_success_task_update), style_success);
-
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_update), style_success);
     } while (false);
 
     return status;
 }
 
-static sat_status_t cli_complete (void *const object)
+static sat_status_t cli_complete (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
-    cli_t *const cli = (cli_t *const) object;
     char id [32];
 
     do
     {
-        if (cli_get_id (cli, id, translate_get_text_by (&cli->translate, type_id_complete)) == false)
+        if (cli_get_id (object, id, translate_get_text_by (&object->translate, type_id_complete)) == false)
         {
             break;
         }
 
-        if (cli_wanna_proceed (cli, translate_get_text_by (&cli->translate, type_question_task_complete)) == false)
+        if (cli_wanna_proceed (object, translate_get_text_by (&object->translate, type_question_task_complete)) == false)
         {
             break;
         }
@@ -321,36 +309,33 @@ static sat_status_t cli_complete (void *const object)
 
         todo_action_result_t result;
 
-        status = todo_process (&cli->todo, &args, &result);
+        status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_complete), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_complete), style_error);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&cli->translate, type_success_task_complete), style_success);
-
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_complete), style_success);
     } while (false);
 
     return status;
 }
 
-static sat_status_t cli_exit (void *const object)
+static sat_status_t cli_exit (cli_t *const object)
 {
     sat_status_t status = sat_status_success (&status);
 
-    cli_t *const cli = (cli_t *const) object;
-    
     do
     {
         sat_status_break_if_null (status, object, "cli is null");
 
-        if (cli_wanna_proceed (cli, translate_get_text_by (&cli->translate, type_question_exit)) == false)
+        if (cli_wanna_proceed (object, translate_get_text_by (&object->translate, type_question_exit)) == false)
         {
             break;
         }
 
-        cli->running = false;
+        object->running = false;
 
     } while (false);
 }
@@ -424,7 +409,7 @@ static bool cli_get_id (const cli_t *const object, char id [32], const char *con
         {
             memset (id, 0, 32);
 
-            strncpy (id, buffer, strlen (buffer) - 1);
+            strncpy (id, buffer, strlen (buffer));
 
             status = true;
             break;

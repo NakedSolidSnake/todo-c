@@ -205,7 +205,7 @@ static sat_status_t todo_action_update (todo_t *const object, const todo_action_
         /* Implementation of the 'update' action goes here */
         task_update_request_t request;
 
-        status = task_update_request_new (&request, args->parameters.third, args->parameters.first, args->parameters.second);
+        status = task_update_request_new (&request, args->parameters.first, args->parameters.second, args->parameters.third);
         sat_status_break_on_error (status);
 
         status = task_update_service_perform (&object->services.update, &request);
