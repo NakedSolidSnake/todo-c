@@ -2,6 +2,7 @@
 #define TODO_TYPES_H
 
 #include <todo_action_args.h>
+#include <todo_action_result.h>
 
 #define TODO_COMMAND_ADD         "add"      /* <command> <task name> <task description> */
 #define TODO_COMMAND_DISPLAY     "display"  /* <command> */

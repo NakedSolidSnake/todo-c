@@ -11,6 +11,7 @@ typedef struct
     sat_status_t (*remove_by_id) (void *const object, const uint32_t id);
     sat_status_t (*complete_by_id) (void *const object, const uint32_t id);
     sat_status_t (*update) (void *const object, const task_t *const task);
+    sat_status_t (*get_all) (void *const object, sat_array_t **const tasks);
 
 } task_repository_t;
 

@@ -30,6 +30,7 @@ static sat_status_t task_repository_memory_find_by_name (void *const object, con
 static sat_status_t task_repository_memory_remove_by_id (void *const object, const uint32_t id);
 static sat_status_t task_repository_memory_complete_by_id (void *const object, const uint32_t id);
 static sat_status_t task_repository_memory_update (void *const object, const task_t *const task);
+static sat_status_t task_repository_memory_get_all (void *const object, sat_array_t **const tasks);
 
 sat_status_t task_repository_memory_open (task_repository_memory_t *const object)
 {
@@ -54,6 +55,7 @@ sat_status_t task_repository_memory_open (task_repository_memory_t *const object
         object->base.remove_by_id = task_repository_memory_remove_by_id;
         object->base.complete_by_id = task_repository_memory_complete_by_id;
         object->base.update = task_repository_memory_update;
+        object->base.get_all = task_repository_memory_get_all;
 
     } while (false);
 
@@ -171,3 +173,49 @@ static sat_status_t task_repository_memory_update (void *const object, const tas
     return status;
 }
 
+static sat_status_t task_repository_memory_get_all (void *const object, sat_array_t **const tasks)
+{
+    sat_status_t status;
+    task_repository_memory_t *memory = (task_repository_memory_t *) object;
+
+    do
+    {
+        sat_status_break_if_null (status, memory, "task_repository_memory_t is null");
+        sat_status_break_if_null (status, tasks, "tasks pointer is null");
+
+        uint32_t size;
+
+        status = sat_set_get_size (memory->storage, &size);
+        sat_status_break_on_error (status);
+
+        sat_status_break_if_equals (status, size, 0, "no tasks available in repository");
+
+        status = sat_array_create (tasks, &(sat_array_args_t)
+                                                {
+                                                    .size = size,
+                                                    .object_size = sizeof (task_t),
+                                                    .mode = sat_array_mode_static
+                                                });
+        sat_status_break_on_error (status);
+
+        for (uint32_t i = 0; i < size; i++)
+        {
+            task_t task;
+
+            status = sat_set_get_object_by (memory->storage, i, &task);
+            sat_status_break_on_error (status);
+
+            status = sat_array_add (*tasks, (void *) &task);
+            sat_status_break_on_error (status);
+        }
+
+        if (sat_status_get_result (&status) == false)
+        {
+            sat_array_destroy (*tasks);
+            *tasks = NULL;
+        }
+
+    } while (false);
+
+    return status;
+}

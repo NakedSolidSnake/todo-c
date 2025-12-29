@@ -17,6 +17,8 @@ typedef struct
         task_complete_service_t complete;
     } services;
 
+    task_repository_t *repository;
+
     sat_set_t *commands;
 
 } todo_t;
@@ -28,7 +30,7 @@ typedef struct
 } todo_args_t;
 
 sat_status_t todo_open (todo_t *const object, const todo_args_t *const args);
-sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const args);
+sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const args, todo_action_result_t *const result);
 sat_status_t todo_close (todo_t *const object);
 
 #endif /* TODO_H */

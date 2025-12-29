@@ -166,7 +166,9 @@ static sat_status_t cli_add (void *const object)
 
         todo_action_args_new_first_second (&args, TODO_COMMAND_ADD, parameters.name, parameters.description);
 
-        status = todo_process (&cli->todo, &args);
+        todo_action_result_t result;
+
+        status = todo_process (&cli->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_add), style_error);
@@ -187,13 +189,33 @@ static sat_status_t cli_display (void *const object)
 
     do
     {
-    //     action_args_t args;
+        todo_action_args_t args;
+        todo_action_args_new (&args, TODO_COMMAND_DISPLAY);
 
-    // memset (&args, 0, sizeof (action_args_t));
+        todo_action_result_t result;
 
-    // strncpy (args.command, COMMAND_DISPLAY, strlen (COMMAND_DISPLAY) + 1);
+        status = todo_process (&cli->todo, &args, &result);
+        sat_status_break_on_error (status);
 
-    // action_manager_process (&object->manager, &args, &object->display);
+        /* Handle the display result here, e.g., print the tasks */
+        sat_iterator_t iterator;
+
+        status = sat_iterator_open (&iterator, (sat_iterator_base_t *)result.data.tasks);
+        if (sat_status_get_result (&status) == false)
+        {
+            sat_array_destroy (result.data.tasks);
+            break;
+        }
+
+        task_t *task = sat_iterator_next (&iterator);
+        while (task != NULL)
+        {
+            printf ("ID: %d, Name: %s, Description: %s, Done: [%c]\n", task->id, task->name, task->description, task->done ? 'X' : ' ');
+            task = sat_iterator_next (&iterator);
+        }
+
+        sat_array_destroy (result.data.tasks);
+        
     } while (false);
 
     return status;
@@ -216,7 +238,9 @@ static sat_status_t cli_remove (void *const object)
 
         todo_action_args_new_first (&args, TODO_COMMAND_REMOVE, id);
 
-        status = todo_process (&cli->todo, &args);
+        todo_action_result_t result;
+
+        status = todo_process (&cli->todo, &args, &result);
 
         if (sat_status_get_result (&status) == false)
         {
@@ -255,7 +279,9 @@ static sat_status_t cli_update (void *const object)
 
         todo_action_args_new_all (&args, TODO_COMMAND_UPDATE, id, parameters.name, parameters.description);
 
-        status = todo_process (&cli->todo, &args);
+        todo_action_result_t result;
+
+        status = todo_process (&cli->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_update), style_error);
@@ -291,7 +317,9 @@ static sat_status_t cli_complete (void *const object)
 
         todo_action_args_new_first (&args, TODO_COMMAND_COMPLETE, id);
 
-        status = todo_process (&cli->todo, &args);
+        todo_action_result_t result;
+
+        status = todo_process (&cli->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             prompt_display_style (translate_get_text_by (&cli->translate, type_error_task_complete), style_error);
