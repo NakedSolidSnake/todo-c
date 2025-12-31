@@ -15,4 +15,5 @@ target_link_libraries (todoc
     PUBLIC
     cli
     task_repository_memory
+    web
 )

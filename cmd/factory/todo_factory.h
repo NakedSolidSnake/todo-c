@@ -6,6 +6,7 @@
 typedef enum
 {
     todo_factory_type_cli,
+    todo_factory_type_web,
     /* Future types can be added here */
 } todo_factory_type_t;
 
