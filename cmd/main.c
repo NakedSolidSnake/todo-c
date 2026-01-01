@@ -1,4 +1,4 @@
-#include <todo_factory.h>
+#include <factory_controller.h>
 #include <task_repository_memory.h>
 
 int main (void)
@@ -13,8 +13,8 @@ int main (void)
         status = task_repository_memory_open (&memory);
         sat_status_break_on_error (status);
 
-        // controller_base_t *controller = todo_factory_create_controller (todo_factory_type_cli);
-        controller_base_t *controller = todo_factory_create_controller (todo_factory_type_web);
+        // controller_base_t *controller = factory_controller_create (factory_controller_type_cli);
+        controller_base_t *controller = factory_controller_create ("web");
         sat_status_break_on_error (status);
 
         status = controller->open (controller, &(controller_base_args_t){.repository = &memory.base});
