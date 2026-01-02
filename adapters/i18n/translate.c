@@ -76,7 +76,7 @@ static sat_json_mapper_t mapper [] =
     { .token = "menu.exit", .data = &texts [type_menu_exit].content [9], .type = sat_json_type_string, .size = 90},
 };
 
-bool translate_init (translate_t *object, char *filename)
+bool translate_init (translate_t *const object, const char *const filename)
 {
     bool status = false;
 
@@ -109,7 +109,7 @@ bool translate_init (translate_t *object, char *filename)
     return status;
 }
 
-char *translate_get_text_by (translate_t *object, type_t type)
+char *translate_get_text_by (const translate_t *const object, type_t type)
 {
     char *content = "Not Found";
 

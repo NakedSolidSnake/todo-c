@@ -13,4 +13,5 @@ target_include_directories (factory_repository
 target_link_libraries (factory_repository
     PUBLIC
     task_repository_memory
+    config
 )

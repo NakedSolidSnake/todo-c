@@ -15,4 +15,5 @@ target_link_libraries (factory_controller
     controller_base
     cli
     web
+    config
 )

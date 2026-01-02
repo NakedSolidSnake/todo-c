@@ -2,8 +2,9 @@
 #include <prompt.h>
 #include <menu.h>
 #include <string.h>
+#include <common.h>
 
-typedef sat_status_t (*cli_command_handler_t) (void *const object);
+typedef sat_status_t (*cli_command_handler_t) (cli_t *const object);
 
 typedef struct 
 {
@@ -47,8 +48,6 @@ sat_status_t cli_init (cli_t *const object)
 
         memset (object, 0, sizeof (cli_t));
 
-        translate_init (&object->translate, NULL);
-
         status = sat_set_create (&object->commands, &(sat_set_args_t)
                                             {
                                                 .size = 6,
@@ -84,6 +83,8 @@ static sat_status_t cli_open (void *const object, const controller_base_args_t *
     do
     {
         sat_status_break_if_null (status, cli_args, "cli_args_t is null");
+
+        translate_init (&cli->translate, args->config->cli.idiom_file);
 
         status = todo_open (&cli->todo, &(todo_args_t) { .repository = args->repository });
         sat_status_break_on_error (status);
@@ -338,6 +339,8 @@ static sat_status_t cli_exit (cli_t *const object)
         object->running = false;
 
     } while (false);
+
+    return status;
 }
 
 static cli_parameters_t cli_get_parameters (const cli_t *const object)

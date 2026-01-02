@@ -49,7 +49,7 @@ static sat_status_t web_open (void *const object, const controller_base_args_t *
 
         sat_webserver_args_t web_args =
         {
-            .port = "1234",
+            .port = args->config->webserver.port,
             .folder = ".",
             .threads_amount = "1",
             .endpoint_amount = 8,

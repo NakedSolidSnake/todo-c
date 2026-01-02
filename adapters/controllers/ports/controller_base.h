@@ -1,12 +1,13 @@
 #ifndef CONTROLLER_BASE_H
 #define CONTROLLER_BASE_H
 
-#include <sat.h>
 #include <task_repository.h>
+#include <config.h>
 
 typedef struct
 {
     task_repository_t *repository;
+    config_t *config;
 } controller_base_args_t;
 
 typedef struct

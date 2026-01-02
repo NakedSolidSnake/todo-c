@@ -11,6 +11,6 @@ target_include_directories (todoc
 
 target_link_libraries (todoc
     PUBLIC
-    task_repository_memory
+    factory_repository
     factory_controller
 )

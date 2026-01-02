@@ -7,7 +7,7 @@
     "error.task.update" : "Não foi possível atualizar a atividade\n\n",
     "error.task.complete" : "Não foi possível marcar a atividade como concluída\n\n",
     "error.task.id" : "Por favor. Digite um ID válido\n\n",
-    "question.modification" : "Você fez modificações. Você quer realmente sair? (sim/não): ",
+    "question.exit" : "Você quer realmente sair? (sim/não): ",
     "question.task.add" : "Você está adicionando uma nova atividade. Você tem certeza? (sim/não): ",
     "question.task.remove" : "Você gostaria de remover? (sim/não): ",
     "question.task.update" : "Você gostaria de atualizer? (sim/não): ",

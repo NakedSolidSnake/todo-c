@@ -2,6 +2,7 @@
 #include <cli.h>
 #include <web.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef controller_base_t *(*factory_controller_create_t) (void);
 
@@ -20,13 +21,13 @@ static const factory_controller_pair_t factory_controller_pairs [] =
     { .type = "web", .create = factory_controller_create_web }
 };
 
-controller_base_t *factory_controller_create (const char *const type)
+controller_base_t *factory_controller_create (const config_t *const config)
 {
     controller_base_t *controller = NULL;
 
     for (size_t i = 0; i < sizeof (factory_controller_pairs) / sizeof (factory_controller_pair_t); i++)
     {
-        if (strcmp (factory_controller_pairs [i].type, type) == 0)
+        if (strcmp (factory_controller_pairs [i].type, config->application.mode) == 0)
         {
             controller = factory_controller_pairs [i].create ();
             break;

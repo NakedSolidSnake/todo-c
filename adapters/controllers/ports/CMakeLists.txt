@@ -8,4 +8,5 @@ target_include_directories (controller_base
 target_link_libraries (controller_base
     INTERFACE
     sat
+    config
 )

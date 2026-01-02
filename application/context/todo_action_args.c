@@ -1,4 +1,5 @@
 #include <todo_action_args.h>
+#include <string.h>
 
 sat_status_t todo_action_args_new (todo_action_args_t *const object, const char *const command)
 {

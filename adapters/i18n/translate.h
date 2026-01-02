@@ -54,8 +54,8 @@ typedef struct
     bool initialized;
 } translate_t;
 
-bool translate_init (translate_t *object, char *filename);
-char *translate_get_text_by (translate_t *object, type_t type);
+bool translate_init (translate_t *const object, const char *const filename);
+char *translate_get_text_by (const translate_t *const object, type_t type);
 
 #endif/* TRANSLATE_H_ */
 
