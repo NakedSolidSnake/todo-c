@@ -216,11 +216,11 @@ static sat_status_t task_repository_memory_get_all (void *const object, sat_arra
         sat_status_break_if_equals (status, size, 0, "no tasks available in repository");
 
         status = sat_array_create (tasks, &(sat_array_args_t)
-                                                {
-                                                    .size = size,
-                                                    .object_size = sizeof (task_t),
-                                                    .mode = sat_array_mode_static
-                                                });
+                                            {
+                                                .size = size,
+                                                .object_size = sizeof (task_t),
+                                                .mode = sat_array_mode_static
+                                            });
         sat_status_break_on_error (status);
 
         for (uint32_t i = 0; i < size; i++)

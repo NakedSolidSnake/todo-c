@@ -15,7 +15,7 @@ typedef struct
 
 typedef struct
 {
-    char name [TODO_COMMAND_FIELD_SIZE + 1];
+    char name [TODO_PARAMETERS_FIELD_SIZE + 1];
     char description [TODO_PARAMETERS_FIELD_SIZE + 1];
 
 } cli_parameters_t;
@@ -106,8 +106,8 @@ static sat_status_t cli_run (void *const object)
     {
         while (cli->running == true)
         {
-            prompt_display_style (menu_logo (), style_fancy);
-            prompt_display_style (menu_show (&cli->translate), style_default);
+            prompt_display_style (menu_logo (), style_fancy, 1);
+            prompt_display_style (menu_show (&cli->translate), style_default, 2);
 
             prompt_show ();
 
@@ -120,7 +120,7 @@ static sat_status_t cli_run (void *const object)
 
             if (sat_status_get_result (&status) == false)
             {
-                prompt_display_style (translate_get_text_by (&cli->translate, type_error_command), style_error);
+                prompt_display_style (translate_get_text_by (&cli->translate, type_error_command), style_error, 1);
                 continue;
             }
 
@@ -169,11 +169,11 @@ static sat_status_t cli_add (cli_t *const object)
         status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_add), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_add), style_error, 1);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_add), style_success);
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_add), style_success, 1);
     } while (false);
 
     return status;
@@ -239,11 +239,11 @@ static sat_status_t cli_remove (cli_t *const object)
 
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_remove), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_remove), style_error, 1);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_remove), style_success);
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_remove), style_success, 1);
     } while (false);
 
     return status;
@@ -277,11 +277,11 @@ static sat_status_t cli_update (cli_t *const object)
         status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_update), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_update), style_error, 1);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_update), style_success);
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_update), style_success, 1);
     } while (false);
 
     return status;
@@ -313,11 +313,11 @@ static sat_status_t cli_complete (cli_t *const object)
         status = todo_process (&object->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
-            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_complete), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_task_complete), style_error, 1);
             break;
         }
 
-        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_complete), style_success);
+        prompt_display_style (translate_get_text_by (&object->translate, type_success_task_complete), style_success, 1);
     } while (false);
 
     return status;
@@ -348,13 +348,14 @@ static cli_parameters_t cli_get_parameters (const cli_t *const object)
     cli_parameters_t args;
 
     memset (&args, 0, sizeof (cli_parameters_t));
-    prompt_display_style (translate_get_text_by (&object->translate, type_task_name), style_default);
+
+    prompt_display_style (translate_get_text_by (&object->translate, type_task_name), style_default, 0);
 
     prompt_read (args.name, TODO_PARAMETERS_FIELD_SIZE);
 
-    prompt_display_style (translate_get_text_by (&object->translate, type_task_description), style_default);
-
+    prompt_display_style (translate_get_text_by (&object->translate, type_task_description), style_default, 0);
     prompt_read (args.description, TODO_PARAMETERS_FIELD_SIZE);
+
     return args;
 }
 
@@ -365,7 +366,7 @@ static bool cli_wanna_proceed (const cli_t *const object, const char *const text
 
     while (true)
     {
-        prompt_display_style (text, style_default);
+        prompt_display_style (text, style_default, 0);
 
         prompt_read (buffer, 10);
 
@@ -382,7 +383,7 @@ static bool cli_wanna_proceed (const cli_t *const object, const char *const text
         {
             prompt_display_style (
                                   translate_get_text_by (&object->translate, type_error_canceled),
-                                  style_error);
+                                  style_error, 1);
             break;
         }
 
@@ -390,7 +391,7 @@ static bool cli_wanna_proceed (const cli_t *const object, const char *const text
         {
             prompt_display_style (
                                   translate_get_text_by (&object->translate, type_error_option),
-                                  style_error);
+                                  style_error, 1);
         }
     }
 
@@ -404,7 +405,7 @@ static bool cli_get_id (const cli_t *const object, char id [32], const char *con
 
     while (true)
     {
-        prompt_display_style (text, style_default);
+        prompt_display_style (text, style_default, 0);
 
         prompt_read (buffer, 10);
 
@@ -422,7 +423,7 @@ static bool cli_get_id (const cli_t *const object, char id [32], const char *con
                      translate_get_text_by (&object->translate, type_input_exit),
                      strlen (translate_get_text_by (&object->translate, type_input_exit))) == 0)
         {
-            prompt_display_style (translate_get_text_by (&object->translate, type_error_canceled), style_error);
+            prompt_display_style (translate_get_text_by (&object->translate, type_error_canceled), style_error, 1);
             break;
         }
 
@@ -430,7 +431,7 @@ static bool cli_get_id (const cli_t *const object, char id [32], const char *con
         {
             prompt_display_style (
                                   translate_get_text_by (&object->translate, type_error_task_id),
-                                  style_error);
+                                  style_error, 1);
         }
     }
 

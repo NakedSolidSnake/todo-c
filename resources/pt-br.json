@@ -24,11 +24,10 @@
     "input.yes" : "sim",
     "input.no" : "não",
     "input.exit" : "sair",
-    "menu.add" : "Para adicionar uma nova atividade\n",
-    "menu.remove" : "Para remover uma atividade\n",
-    "menu.update" : "Para atualizar uma atividade\n",
-    "menu.display" : "Apresenta todas as atividades cadastradas\n",
-    "menu.complete" : "Para marcar uma atividade como concluída\n",
-    "menu.save" : "Para salvar as atividade\n",
-    "menu.exit" : "Para sair da aplicação\n\n"
+    "menu.add" : "Para adicionar uma nova atividade",
+    "menu.remove" : "Para remover uma atividade",
+    "menu.update" : "Para atualizar uma atividade",
+    "menu.display" : "Apresenta todas as atividades cadastradas",
+    "menu.complete" : "Para marcar uma atividade como concluída",
+    "menu.exit" : "Para sair da aplicação"
 }

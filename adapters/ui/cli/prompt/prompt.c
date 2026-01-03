@@ -5,7 +5,7 @@
 
 void prompt_show (void)
 {
-    prompt_display_style ("(todo) > ", style_fancy);
+    prompt_display_style ("(todo) > ", style_fancy, 0);
 }
 
 void prompt_read (char *const buffer, const size_t size)
@@ -23,9 +23,14 @@ void prompt_read_command (char *const buffer, const size_t size)
     common_string_to_lower (buffer);
 }
 
-void prompt_display_style (const char *const message, style_t style)
+void prompt_display_style (const char *const message, style_t style, uint8_t new_lines)
 {
     style_set (style);
     printf ("%s", message);
     style_reset ();
+
+    for (uint8_t i = 0; i < new_lines; i++)
+    {
+        printf ("\n");
+    }
 }

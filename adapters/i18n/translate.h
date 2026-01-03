@@ -36,7 +36,6 @@ typedef enum
     type_menu_update,
     type_menu_display,
     type_menu_complete,
-    type_menu_save,
     type_menu_exit,
 
 } type_t;

@@ -1,5 +1,6 @@
 #include <task_update_request.h>
 #include <common.h>
+#include <string.h>
 
 sat_status_t task_update_request_new (task_update_request_t *const object, const char *const id, const char *const name, const char *const description)
 {
@@ -17,6 +18,8 @@ sat_status_t task_update_request_new (task_update_request_t *const object, const
         sat_status_break_if_false (status, common_is_a_number (id), "ID is not a number");
 
         id_value = (uint32_t) strtoul (id, NULL, 10);
+
+        memset (object, 0, sizeof (task_update_request_t));
 
         object->id = id_value;
         object->name = name;

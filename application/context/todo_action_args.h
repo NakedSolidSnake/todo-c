@@ -2,6 +2,7 @@
 #define TODO_ACTION_ARGS_H
 
 #include <sat.h>
+#include <task.h>
 
 #define TODO_COMMAND_FIELD_SIZE    10
 #define TODO_PARAMETERS_FIELD_SIZE  255
