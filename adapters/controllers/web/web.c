@@ -47,6 +47,8 @@ static sat_status_t web_open (void *const object, const controller_base_args_t *
         sat_status_break_if_null (status, web, "web_t is null");
         sat_status_break_if_null (status, args, "web_args_t is null");
 
+        translate_init (&web->translate, args->config->application.language);
+
         sat_webserver_args_t web_args =
         {
             .port = args->config->webserver.port,
@@ -64,17 +66,17 @@ static sat_status_t web_open (void *const object, const controller_base_args_t *
 
         status = sat_webserver_add_endpoint (&web->server, "/health", "GET", handler_health, NULL);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/create", "POST", handler_create, &web->todo);
+        status = sat_webserver_add_endpoint (&web->server, "/create", "POST", handler_create, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/display", "GET", handler_display, &web->todo);
+        status = sat_webserver_add_endpoint (&web->server, "/display", "GET", handler_display, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/remove", "DELETE", handler_remove, &web->todo);
+        status = sat_webserver_add_endpoint (&web->server, "/remove", "DELETE", handler_remove, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/update", "PUT", handler_update, &web->todo);
+        status = sat_webserver_add_endpoint (&web->server, "/update", "PUT", handler_update, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/complete", "POST", handler_complete, &web->todo);
+        status = sat_webserver_add_endpoint (&web->server, "/complete", "POST", handler_complete, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/shutdown", "POST", handler_shutdown, &web->running);
+        status = sat_webserver_add_endpoint (&web->server, "/shutdown", "POST", handler_shutdown, web);
         sat_status_break_on_error (status);
         status = sat_webserver_add_endpoint (&web->server, "/schema", "GET", handler_schema, NULL);
         sat_status_break_on_error (status);

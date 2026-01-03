@@ -75,7 +75,7 @@ sat_status_t todo_process (todo_t *const object, const todo_action_args_t *const
         status = todo_command_is_valid (args->command);
         sat_status_break_on_error (status);
 
-        todo_action_t *action;
+        todo_action_t *action = NULL;
         status = sat_set_get_object_ref_by_parameter (object->commands,
                                          args->command,
                                          todo_compare_by_command,

@@ -5,10 +5,10 @@ static void config_load_default (config_t *const object)
 {
     memset (object, 0, sizeof (config_t));
 
-    strncpy (object->webserver.port, "1234", CONFIG_WEBSERVER_PORT_LENGTH);
-    strncpy (object->repository.type, "memory", CONFIG_REPOSITORY_TYPE_LENGTH);
-    strncpy (object->cli.idiom_file, "default", CONFIG_CLI_IDIOM_FILE_PATH_LENGTH);
-    strncpy (object->application.mode, "cli", CONFIG_APPLICATION_MODE_LENGTH);
+    strncpy (object->webserver.port,       "1234",    CONFIG_WEBSERVER_PORT_LENGTH);
+    strncpy (object->repository.type,      "memory",  CONFIG_REPOSITORY_TYPE_LENGTH);
+    strncpy (object->application.mode,     "cli",     CONFIG_APPLICATION_MODE_LENGTH);
+    strncpy (object->application.language, "default", CONFIG_APPLICATION_LANGUAGE_LENGTH);
 }
 
 sat_status_t config_load (config_t *const object, const char *const file_path)
@@ -34,6 +34,13 @@ sat_status_t config_load (config_t *const object, const char *const file_path)
                     .data = object->application.mode
                 },
                 {
+                    .group = "application",
+                    .field = "language",
+                    .type = sat_properties_type_string,
+                    .size = CONFIG_APPLICATION_LANGUAGE_LENGTH,
+                    .data = object->application.language
+                },
+                {
                     .group = "repository",
                     .field = "type",
                     .type = sat_properties_type_string,
@@ -46,13 +53,6 @@ sat_status_t config_load (config_t *const object, const char *const file_path)
                     .type = sat_properties_type_string,
                     .size = CONFIG_WEBSERVER_PORT_LENGTH,
                     .data = object->webserver.port
-                },
-                {
-                    .group = "cli",
-                    .field = "idiom",
-                    .type = sat_properties_type_string,
-                    .size = CONFIG_CLI_IDIOM_FILE_PATH_LENGTH,
-                    .data = object->cli.idiom_file
                 },
             },
             .amount = 4

@@ -1,19 +1,20 @@
 #include <handler_shutdown.h>
 #include <string.h>
 #include <web_send.h>
+#include <web.h>
+#include <web_response.h>
 
 int handler_shutdown (struct mg_connection *conn, void *data)
 {
-    bool *const running = (bool *const) data;
+    web_t *const web = (web_t *const) data;
     int http_status = sat_webserver_http_status_internal_server_error;
-    const char *message = "{\"message\": \"Internal Server Error\"}";
     sat_status_t status;
     char body [64] = {0};
     char command [32] = {0};
 
     do 
     {
-        sat_status_break_if_null (status, running, "running flag is null");
+        sat_status_break_if_null (status, web, "web_t is null");
 
         int body_length = mg_read (conn, body, sizeof (body) - 1);
 
@@ -39,18 +40,20 @@ int handler_shutdown (struct mg_connection *conn, void *data)
 
         if (strcmp (command, "yes") == 0)
         {
-            *running = false;
-            message = "{\"message\": \"Server is shutting down\"}";
+            web->running = false;
+            sat_status_set (&status, true, "Server is shutting down");
             http_status = sat_webserver_http_status_ok;
         }
         else
         {
-            message = "{\"message\": \"Invalid command\"}";
+            sat_status_failure (&status, "Invalid command");
             http_status = sat_webserver_http_status_bad_request;
         }
 
 
     } while (false);
+
+    const char *message = web_response_create (sat_status_get_result (&status), sat_status_get_motive (&status));
 
     return web_send_response (conn, message, http_status);
 }

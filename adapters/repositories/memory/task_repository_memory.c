@@ -9,14 +9,6 @@ static bool task_repository_memory_is_equal (const void *const a, const void *co
     return (strcmp (task_a->name, task_b->name) == 0);
 }
 
-static bool task_repository_memory_compare_name (const void *const element, const void *const param)
-{
-    const task_t *task_element = (const task_t *) element;
-    const char *name = (const char *) param;
-
-    return (strcmp (task_element->name, name) == 0);
-}
-
 static bool task_repository_memory_compare_id (const void *const element, const void *const param)
 {
     const task_t *task_element = (const task_t *) element;
@@ -25,7 +17,16 @@ static bool task_repository_memory_compare_id (const void *const element, const 
     return (task_element->id == *id);
 }
 
+static bool task_repository_memory_compare_name (const void *const element, const void *const param)
+{
+    const task_t *task_element = (const task_t *) element;
+    const char *name = (const char *) param;
+
+    return (strcmp (task_element->name, name) == 0);
+}
+
 static sat_status_t task_repository_memory_store (void *const object, const task_t *const task);
+static sat_status_t task_repository_memory_find_by_id (void *const object, const uint32_t id, task_t *const task);
 static sat_status_t task_repository_memory_find_by_name (void *const object, const char *const name, task_t *const task);
 static sat_status_t task_repository_memory_remove_by_id (void *const object, const uint32_t id);
 static sat_status_t task_repository_memory_complete_by_id (void *const object, const uint32_t id);
@@ -40,6 +41,8 @@ sat_status_t task_repository_memory_open (task_repository_memory_t *const object
     {
         sat_status_break_if_null (status, object, "task_repository_memory_t is null");
 
+        memset (object, 0, sizeof (task_repository_memory_t));
+
         status = sat_set_create (&object->storage, &(sat_set_args_t)
                                                     {
                                                         .size = 10,
@@ -51,6 +54,7 @@ sat_status_t task_repository_memory_open (task_repository_memory_t *const object
 
         object->base.object = object;
         object->base.store = task_repository_memory_store;
+        object->base.find_by_id = task_repository_memory_find_by_id;
         object->base.find_by_name = task_repository_memory_find_by_name;
         object->base.remove_by_id = task_repository_memory_remove_by_id;
         object->base.complete_by_id = task_repository_memory_complete_by_id;
@@ -79,6 +83,27 @@ static sat_status_t task_repository_memory_store (void *const object, const task
         status = sat_set_add (memory->storage, (void *) &task_new);
 
         sat_log_debug ("Task stored in memory repository: ID=%u, Name=%s", task_new.id, task_new.name);
+    } while (false);
+
+    return status;
+}
+
+static sat_status_t task_repository_memory_find_by_id (void *const object, const uint32_t id, task_t *const task)
+{
+    sat_status_t status;
+    task_repository_memory_t *memory = (task_repository_memory_t *) object;
+
+    do
+    {
+        sat_status_break_if_null (status, memory, "task_repository_memory_t is null");
+        sat_status_break_if_null (status, id, "id is null");
+        sat_status_break_if_null (status, task, "task_t is null");
+
+        status = sat_set_get_object_by_parameter (memory->storage,
+                                           (void *) &id,
+                                           task_repository_memory_compare_id,
+                                           (void *) task);
+
     } while (false);
 
     return status;

@@ -1,13 +1,13 @@
 #include <handler_display.h>
 #include <string.h>
 #include <web_send.h>
-#include <todo.h>
+#include <web.h>
 
 int handler_display (struct mg_connection *conn, void *data)
 {
     char buffer [8192] = {0};
     sat_status_t status;
-    todo_t *const todo = (todo_t *const) data;
+    web_t *const web = (web_t *const) data;
     sat_json_t array;
     char *s = "[]";
 
@@ -18,7 +18,7 @@ int handler_display (struct mg_connection *conn, void *data)
 
         todo_action_result_t result;
 
-        status = todo_process (todo, &args, &result);
+        status = todo_process (&web->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             break;

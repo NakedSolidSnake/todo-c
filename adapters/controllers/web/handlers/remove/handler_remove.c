@@ -1,19 +1,19 @@
 #include <handler_remove.h>
 #include <string.h>
 #include <web_send.h>
-#include <todo.h>
+#include <web.h>
+#include <web_response.h>
 
 int handler_remove (struct mg_connection *conn, void *data)
 {
     int http_status = sat_webserver_http_status_not_found;
-    const char *message = "{\"message\": \"Not Found\"}";
-    todo_t *const todo = (todo_t *const) data;
+    web_t *const web = (web_t *const) data;
     sat_status_t status;
     char id [32] = {0};
 
     do 
     {
-        sat_status_break_if_null (status, todo, "todo_t is null");
+        sat_status_break_if_null (status, web, "web_t is null");
 
         const struct mg_request_info *ri = mg_get_request_info (conn);
         sat_status_break_if_null (status, ri, "mg_request_info is null");
@@ -26,13 +26,17 @@ int handler_remove (struct mg_connection *conn, void *data)
         todo_action_args_new_first (&args, TODO_COMMAND_REMOVE, id);
 
         todo_action_result_t result;
-        status = todo_process (todo, &args, &result);
+        status = todo_process (&web->todo, &args, &result);
         sat_status_break_on_error (status);
 
-        message = "{\"message\": \"Task removed successfully\"}";
+        sat_status_set (&status, true, translate_get_text_by (&web->translate, type_success_task_remove));
         http_status = sat_webserver_http_status_ok;
 
     } while (false);
+
+    const char *message = web_response_create (sat_status_get_result (&status), sat_status_get_motive (&status));
+
+    sat_log_info ("Remove Handler Response: %s", message);
 
     return web_send_response (conn, message, http_status);
 }

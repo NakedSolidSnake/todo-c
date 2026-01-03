@@ -3,19 +3,20 @@
 #include <todo.h>
 #include <web_send.h>
 #include <create_request.h>
+#include <web_response.h>
+#include <web.h>
 
 int handler_create (struct mg_connection *conn, void *data)
 {
-    todo_t *const todo = (todo_t *const) data;
+    web_t *const web = (web_t *const) data;
 
     sat_status_t status;
     int http_status = sat_webserver_http_status_ok;
     char body [1280] = {0};
-    char *response = "";
 
     do
     {
-        sat_status_break_if_null (status, todo, "todo_t is null");
+        sat_status_break_if_null (status, web, "web_t is null");
         
         const struct mg_request_info *ri = mg_get_request_info (conn);
         sat_status_break_if_null (status, ri, "mg_request_info is null");
@@ -46,14 +47,20 @@ int handler_create (struct mg_connection *conn, void *data)
         todo_action_args_new_first_second (&args, TODO_COMMAND_ADD, request.name, request.description);
 
         todo_action_result_t result;
-        status = todo_process (todo, &args, &result);
+        status = todo_process (&web->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             http_status = sat_webserver_http_status_bad_request;
             break;
         }
 
+        sat_status_set (&status, true, translate_get_text_by (&web->translate, type_success_task_add));
+
     } while (false);
 
-    return web_send_response (conn, response, http_status);   
+    const char *message = web_response_create (sat_status_get_result (&status), sat_status_get_motive (&status));
+
+    sat_log_info ("Create Handler Response: %s", message);
+
+    return web_send_response (conn, message, http_status);   
 }

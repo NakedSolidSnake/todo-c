@@ -13,6 +13,7 @@ target_sources (web
     ${CMAKE_CURRENT_LIST_DIR}/handlers/schema/handler_schema.c
 
     ${CMAKE_CURRENT_LIST_DIR}/utils/web_send.c
+    ${CMAKE_CURRENT_LIST_DIR}/utils/web_response.c
 )
 
 target_include_directories (web
@@ -36,4 +37,5 @@ target_link_libraries (web
     PUBLIC
     controller_base
     application
+    translate
 )

@@ -84,7 +84,7 @@ static sat_status_t cli_open (void *const object, const controller_base_args_t *
     {
         sat_status_break_if_null (status, cli_args, "cli_args_t is null");
 
-        translate_init (&cli->translate, args->config->cli.idiom_file);
+        translate_init (&cli->translate, args->config->application.language);
 
         status = todo_open (&cli->todo, &(todo_args_t) { .repository = args->repository });
         sat_status_break_on_error (status);

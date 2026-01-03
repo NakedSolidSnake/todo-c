@@ -1,26 +1,26 @@
 #include <handler_update.h>
 #include <update_request.h>
 #include <string.h>
-#include <todo.h>
+#include <web.h>
 #include <web_send.h>
+#include <web_response.h>
 
 int handler_update (struct mg_connection *conn, void *data)
 {
-    todo_t *const todo = (todo_t *const) data;
+    web_t *const web = (web_t *const) data;
 
     sat_status_t status;
     int http_status = sat_webserver_http_status_ok;
     char body [1280] = {0};
-    char *response = "{\"message\": \"Task Updated successfully\"}";
 
     do
     {
-        sat_status_break_if_null (status, todo, "todo_t is null");
+        sat_status_break_if_null (status, web, "web_t is null");
         
         int body_length = mg_read (conn, body, sizeof (body) - 1);
         if (body_length <= 0)
         {
-            response = "{\"message\": \"Failed to read request body\"}";
+            sat_status_set (&status, false, "Failed to read request body");
             http_status = sat_webserver_http_status_bad_request;
             break;
         }
@@ -45,15 +45,18 @@ int handler_update (struct mg_connection *conn, void *data)
         todo_action_args_new_all (&args, TODO_COMMAND_UPDATE, request.id, request.name, request.description);
 
         todo_action_result_t result;
-        status = todo_process (todo, &args, &result);
+        status = todo_process (&web->todo, &args, &result);
         if (sat_status_get_result (&status) == false)
         {
             http_status = sat_webserver_http_status_bad_request;
-            response = "{\"message\": \"Failed to update task\"}";
             break;
         }
 
+        sat_status_set (&status, true, translate_get_text_by (&web->translate, type_success_task_update));
+
     } while (false);
 
-    return web_send_response (conn, response, http_status); 
+    const char *message = web_response_create (sat_status_get_result (&status), sat_status_get_motive (&status));
+
+    return web_send_response (conn, message, http_status); 
 }
