@@ -78,7 +78,7 @@ static sat_status_t web_open (void *const object, const controller_base_args_t *
         sat_status_break_on_error (status);
         status = sat_webserver_add_endpoint (&web->server, "/shutdown", "POST", handler_shutdown, web);
         sat_status_break_on_error (status);
-        status = sat_webserver_add_endpoint (&web->server, "/schema", "GET", handler_schema, NULL);
+        status = sat_webserver_add_endpoint (&web->server, "/schemas", "GET", handler_schema, NULL);
         sat_status_break_on_error (status);
 
         web->running = true;

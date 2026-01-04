@@ -167,49 +167,57 @@ static const char *get_delete_schema(void)
 
 int handler_schema (struct mg_connection *conn, void *data)
 {
-    char filter[64] = {0};
+    char filter [64] = {0};
     const char *json_response = NULL;
 
-    const struct mg_request_info *ri = mg_get_request_info (conn);
+    do
+    {
+        const struct mg_request_info *ri = mg_get_request_info (conn);
+        if (ri->query_string == NULL)
+        {
+            json_response = get_endpoints_list ();
+        }
+        else
+        {
+            mg_get_var (ri->query_string, strlen (ri->query_string), "filter", filter, sizeof (filter));
     
-    // Get filter query parameter
-    mg_get_var (ri->query_string, strlen (ri->query_string), "filter", filter, sizeof (filter));
-    
-    // Select schema based on filter
-    if (strlen(filter) == 0)
-    {
-        // No filter - show endpoints list
-        json_response = get_endpoints_list();
-    }
-    else if (strcmp(filter, "health") == 0)
-    {
-        json_response = get_health_schema();
-    }
-    else if (strcmp(filter, "display") == 0)
-    {
-        json_response = get_display_schema();
-    }
-    else if (strcmp(filter, "create") == 0)
-    {
-        json_response = get_create_schema();
-    }
-    else if (strcmp(filter, "update") == 0)
-    {
-        json_response = get_update_schema();
-    }
-    else if (strcmp(filter, "complete") == 0)
-    {
-        json_response = get_complete_schema();
-    }
-    else if (strcmp(filter, "delete") == 0)
-    {
-        json_response = get_delete_schema();
-    }
-    else
-    {
-        // Invalid filter - show endpoints list as fallback
-        json_response = get_endpoints_list();
-    }
-    
+            // Select schema based on filter
+            if (strlen (filter) == 0)
+            {
+                // No filter - show endpoints list
+                json_response = get_endpoints_list();
+            }
+            else if (strcmp(filter, "health") == 0)
+            {
+                json_response = get_health_schema();
+            }
+            else if (strcmp(filter, "display") == 0)
+            {
+                json_response = get_display_schema();
+            }
+            else if (strcmp(filter, "create") == 0)
+            {
+                json_response = get_create_schema();
+            }
+            else if (strcmp(filter, "update") == 0)
+            {
+                json_response = get_update_schema();
+            }
+            else if (strcmp(filter, "complete") == 0)
+            {
+                json_response = get_complete_schema();
+            }
+            else if (strcmp(filter, "delete") == 0)
+            {
+                json_response = get_delete_schema();
+            }
+            else
+            {
+                // Invalid filter - show endpoints list as fallback
+                json_response = get_endpoints_list();
+            }
+        }
+    } while (false);
+
     return web_send_response (conn, json_response, sat_webserver_http_status_ok);
 }   

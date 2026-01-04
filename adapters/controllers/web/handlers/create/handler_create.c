@@ -11,7 +11,7 @@ int handler_create (struct mg_connection *conn, void *data)
     web_t *const web = (web_t *const) data;
 
     sat_status_t status;
-    int http_status = sat_webserver_http_status_ok;
+    int http_status = sat_webserver_http_status_created;
     char body [1280] = {0};
 
     do
