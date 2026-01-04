@@ -7,6 +7,7 @@ static void config_load_default (config_t *const object)
 
     strncpy (object->webserver.port,       "1234",    CONFIG_WEBSERVER_PORT_LENGTH);
     strncpy (object->repository.type,      "memory",  CONFIG_REPOSITORY_TYPE_LENGTH);
+    strncpy (object->repository.database,  "todo.db", CONFIG_REPOSITORY_DATABASE_LENGTH);
     strncpy (object->application.mode,     "cli",     CONFIG_APPLICATION_MODE_LENGTH);
     strncpy (object->application.language, "default", CONFIG_APPLICATION_LANGUAGE_LENGTH);
 }
@@ -48,6 +49,13 @@ sat_status_t config_load (config_t *const object, const char *const file_path)
                     .data = object->repository.type
                 },
                 {
+                    .group = "repository",
+                    .field = "database",
+                    .type = sat_properties_type_string,
+                    .size = CONFIG_REPOSITORY_DATABASE_LENGTH,
+                    .data = object->repository.database
+                },
+                {
                     .group = "webserver",
                     .field = "port",
                     .type = sat_properties_type_string,
@@ -55,7 +63,7 @@ sat_status_t config_load (config_t *const object, const char *const file_path)
                     .data = object->webserver.port
                 },
             },
-            .amount = 4
+            .amount = 5
         };
 
         status = sat_properties_open (&properties, (char *)file_path);

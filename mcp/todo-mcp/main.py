@@ -124,7 +124,7 @@ async def update_task (id: int, name: str, description: str, context: Context):
     """
 
     body = {
-        "id": id,
+        "id": str(id),
         "name": name,
         "description": description
     }
@@ -146,11 +146,8 @@ async def delete_task (id: int, context: Context):
     Delete a task from the todo webserver.
     """
 
-    body = {
-        "id": id
-    }
-
-    response = requests.delete ("http://localhost:1234/delete", json=body)
+    params = {"id": str(id)}
+    response = requests.delete ("http://localhost:1234/remove", params=params)
     
     if response.status_code == 200:
         result = response.json()
@@ -168,7 +165,7 @@ async def mark_task_complete (id: int, context: Context):
     """
 
     body = {
-        "id": id
+        "id": str(id)
     }
 
     response = requests.post ("http://localhost:1234/complete", json=body)

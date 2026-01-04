@@ -5,6 +5,7 @@
 
 #define CONFIG_WEBSERVER_PORT_LENGTH       6
 #define CONFIG_REPOSITORY_TYPE_LENGTH      16
+#define CONFIG_REPOSITORY_DATABASE_LENGTH  256
 #define CONFIG_APPLICATION_MODE_LENGTH     16
 #define CONFIG_APPLICATION_LANGUAGE_LENGTH 256
 
@@ -18,6 +19,7 @@ typedef struct
     struct 
     {
         char type [CONFIG_REPOSITORY_TYPE_LENGTH + 1];
+        char database [CONFIG_REPOSITORY_DATABASE_LENGTH + 1];
     } repository;
 
     struct
